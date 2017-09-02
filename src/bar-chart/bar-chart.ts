@@ -27,7 +27,6 @@ export class BarChart {
     }
 
     private init() {
-        console.log('this.valueSide, this._config.size', this.valueSide, this._config.size)
         this.svg = d3.select(this.container)
             .append('svg').attr(this.valueSide, this._config.size)
             .classed('bar-chart', true);
@@ -53,7 +52,8 @@ export class BarChart {
         var chart = this.svg
             .attr(this.barsSide, this._config.barSize * data.length);
 
-        var bar = chart.selectAll('g').data(data);
+        var bar = chart.selectAll('g')
+            .data(data);
         bar.exit().remove();
 
         const barEnter = bar.enter().append('g');
