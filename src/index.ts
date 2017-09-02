@@ -6,7 +6,7 @@ const interval = 2000;
 const lineChart = new LineChart(document.getElementById('line-chart-container'));
 
 const random = (order: number = 2) => {
-    const o = 10 * order;
+    const o = Math.pow(10,  order);
     return Math.round(Math.random() * o);
 };
 //
@@ -20,18 +20,19 @@ const random = (order: number = 2) => {
 // }
 
 function updateLineChart() {
-    const rows = 100;
+    const rows = random();
     let data: IPoint[] = [];
     for (var i = 0; i < rows; i++) {
         data.push({
-            x: `${random(1)}-${random(1)}-${random(1)}`,
+            x:  `${random(1)}-${random(1)}-${random(1)}`,
             y: random()
         });
     }
+    console.log('data', data)
     lineChart.update(data);
 }
 
-updateLineChart();
+// updateLineChart();
 
 setInterval(() => {
     // updateBarChart();

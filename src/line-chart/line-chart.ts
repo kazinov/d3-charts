@@ -51,6 +51,9 @@ export interface ILineChartData {
 
 export class LineChart {
     private svg: d3.Selection<any, any, any, any>;
+    private g: d3.Selection<any, any, any, any>;
+    private pathG: d3.Selection<any, any, any, any>;
+    private axisG: d3.Selection<any, any, any, any>;
     private _config: ILineChartConfig;
 
     constructor(private container: Element, config?: ILineChartConfig) {
@@ -62,6 +65,9 @@ export class LineChart {
         this.svg = d3.select(this.container)
             .append('svg')
             .classed('line-chart', true);
+        this.g = this.svg.append('g');
+        this.axisG = this.g.append('g');
+        this.pathG = this.g.append('g');
     }
 
     config(config?: ILineChartConfig) {
@@ -76,8 +82,7 @@ export class LineChart {
             .attr('width', this._config.width)
             .attr('height', this._config.height);
 
-        const g = this.svg.append('g')
-            .attr('transform', 'translate(' + this._config.margin.left + ',' + this._config.margin.top + ')');
+            this.g.attr('transform', 'translate(' + this._config.margin.left + ',' + this._config.margin.top + ')');
 
         let xScale: d3.ScaleTime<number, number>;
         let yScale: d3.ScaleLinear<number, number>;
@@ -99,7 +104,6 @@ export class LineChart {
             .y(function (d) {
                 return yScale(d.y);
             });
-
 
         if (parseX || parseY) {
             data = data.map((point: IPoint) => {
@@ -132,29 +136,41 @@ export class LineChart {
             return d.y;
         }));
 
-        g.append('g')
+        this.axisG.selectAll('.x-axis').remove();
+        this.axisG.selectAll('.y-axis').remove();
+
+        const gAxisX = this.axisG.append('g').classed('x-axis', true);
+        const gAxisY = this.axisG.append('g').classed('y-axis', true);
+
+        gAxisX
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3.axisBottom(xScale))
-            .select('.domain')
-            .remove();
+            .call(d3.axisBottom(xScale)
+                .ticks(5)
+                .tickSize(-height));
 
-        g.append('g')
-            .call(d3.axisLeft(yScale))
-            .append('text')
-            .attr('fill', '#000')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 6)
-            .attr('dy', '0.71em')
-            .attr('text-anchor', 'end')
-            .text('Price ($)');
+        gAxisY
+            .call(d3.axisLeft(yScale)
+                .ticks(5)
+                .tickSize(-width));
 
-        g.append('path')
-            .datum(data)
+        const path = this.pathG.selectAll('path')
+            .data([data]);
+
+        path.exit().remove();
+
+        const pathEnter = path.enter().append('path');
+
+
+        pathEnter
+            .merge(path)
+            .attr('transform', 'translate(1, 0)')
             .attr('fill', 'none')
             .attr('stroke', 'steelblue')
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .attr('stroke-width', 1.5)
+            .transition()
+            .duration(500)
             .attr('d', line);
 
     }
