@@ -9,7 +9,7 @@ export interface IBarChartConfig {
 }
 
 const BarChartConfigDefaults: IBarChartConfig = {
-    size: 420,
+    size: 220,
     barSize: 20,
     transitionDuration: 500,
     horizontal: false

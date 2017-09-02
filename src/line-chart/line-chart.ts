@@ -28,8 +28,8 @@ export interface ILineChartConfig {
 }
 
 const LineChartConfigDefaults: ILineChartConfig = {
-    width: 600,
-    height: 400,
+    width: 400,
+    height: 300,
     margin: {top: 20, right: 20, bottom: 30, left: 50},
     xScale: {
         type: ScaleTypes.time,
@@ -163,7 +163,7 @@ export class LineChart {
 
         pathEnter
             .merge(path)
-            .attr('transform', 'translate(1, 0)')
+            // .attr('transform', 'translate(1, 0)')
             .attr('fill', 'none')
             .attr('stroke', 'steelblue')
             .attr('stroke-linejoin', 'round')
