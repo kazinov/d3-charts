@@ -1,18 +1,18 @@
 import { BarChart } from './bar-chart/bar-chart';
 
+const interval = 2000;
 const lineChart = new BarChart(document.getElementById('bar-chart-container'));
-lineChart.update([4, 8, 15, 16, 23, 42]);
 
+const random = (order: number = 2) => {
+    const o = 10 * order;
+    return Math.round(Math.random() * o);
+};
 
-const dataInput: HTMLInputElement = <HTMLInputElement>document.getElementById('data');
-dataInput.addEventListener('change', () => {
-    const numberPattern = /\d+/g;
-
-    let datum: number[] = [];
-    const numbers = dataInput.value.match(numberPattern);
-    if (numbers && numbers.length) {
-        datum = numbers.map((val: string) => + val);
+setInterval(() => {
+    const rows = random(1) || 1;
+    const data = [];
+    for (var i = 0; i < rows; i++) {
+        data.push(random());
     }
-
-    lineChart.update(datum);
-});
+    lineChart.update(data);
+}, interval);
