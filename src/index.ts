@@ -1,6 +1,6 @@
-import { LineChart } from './line-chart/line-chart.ts';
+import { BarChart } from './bar-chart/bar-chart';
 
-const lineChart = new LineChart(document.getElementById('line-chart-container'));
+const lineChart = new BarChart(document.getElementById('bar-chart-container'));
 lineChart.update([4, 8, 15, 16, 23, 42]);
 
 

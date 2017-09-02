@@ -1,27 +1,27 @@
 import * as d3 from 'd3';
-import './line-chart.css';
+import './bar-chart.css';
 
-export interface ILineChartConfig {
+export interface IBarChartConfig {
     size?: number;
     barSize?: number;
     transitionDuration?: number;
     horizontal?: boolean
 }
 
-const LineChartConfigDefaults: ILineChartConfig = {
+const BarChartConfigDefaults: IBarChartConfig = {
     size: 420,
     barSize: 20,
     transitionDuration: 3500,
     horizontal: false
 };
 
-export class LineChart {
+export class BarChart {
     private svg: d3.Selection<any, any, any, any>;
-    private _config: ILineChartConfig;
+    private _config: IBarChartConfig;
     private valueSide: string;
     private barsSide: string;
 
-    constructor(private container: Element, config?: ILineChartConfig) {
+    constructor(private container: Element, config?: IBarChartConfig) {
         this.config(config);
         this.init();
     }
@@ -30,11 +30,11 @@ export class LineChart {
         console.log('this.valueSide, this._config.size', this.valueSide, this._config.size)
         this.svg = d3.select(this.container)
             .append('svg').attr(this.valueSide, this._config.size)
-            .classed('line-chart', true);
+            .classed('bar-chart', true);
     }
 
-    config(config?: ILineChartConfig) {
-        this._config = Object.assign(LineChartConfigDefaults, config);
+    config(config?: IBarChartConfig) {
+        this._config = Object.assign(BarChartConfigDefaults, config);
         this.valueSide = this._config.horizontal ? 'width' : 'height';
         this.barsSide = this._config.horizontal ? 'height' : 'width';
     }
