@@ -122,12 +122,12 @@ export class LineChart {
 
         pathEnter
             .merge(path)
-            // .attr('transform', 'translate(1, 0)')
+            .attr('transform', 'translate(0.5, 0.5)')
             .attr('fill', 'none')
             .attr('stroke', 'steelblue')
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
-            .attr('stroke-width', 1.5)
+            .attr('stroke-width', 1)
             .transition()
             .duration(500)
             .attr('d', line);
