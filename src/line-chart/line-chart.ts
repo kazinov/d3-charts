@@ -84,57 +84,17 @@ export class LineChart {
 
             this.g.attr('transform', 'translate(' + this._config.margin.left + ',' + this._config.margin.top + ')');
 
-        let xScale: d3.ScaleTime<number, number>;
-        let yScale: d3.ScaleLinear<number, number>;
-        let parseX: IParseFunction;
-        let parseY: IParseFunction;
+        let xScale: d3.ScaleTime<number, number> = d3.scaleTime()
+                .rangeRound([0, width])
+                .domain(d3.extent(data, (d) => d.x));
 
-        xScale = d3.scaleTime();
-        parseX = d3.timeParse(this._config.xScale.format);
+        let yScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
+            .rangeRound([height, 0])
+            .domain(d3.extent(data, (d) => d.y));
 
-        yScale = d3.scaleLinear();
-
-        xScale = xScale.rangeRound([0, width]);
-        yScale = yScale.rangeRound([height, 0]);
-
-        var line = d3.line<IPoint>()
-            .x(function (d: IPoint) {
-                return xScale(d.x);
-            })
-            .y(function (d) {
-                return yScale(d.y);
-            });
-
-        if (parseX || parseY) {
-            data = data.map((point: IPoint) => {
-                if (parseX) {
-                    point.x = parseX(point.x);
-                }
-
-                if (parseY) {
-                    point.y = parseY(point.y);
-                }
-
-                return point;
-            });
-        }
-
-        function sortByDateAscending(a, b) {
-            // Dates will be cast to numbers automagically:
-            return a.date - b.date;
-        }
-
-        data = data.sort((a: IPoint, b:IPoint) => {
-            return a.x - b.x;
-        });
-
-        xScale.domain(d3.extent(data, (d) => {
-            return d.x;
-        }));
-
-        yScale.domain(d3.extent(data, (d) => {
-            return d.y;
-        }));
+        const line = d3.line<IPoint>()
+            .x((d: IPoint) => xScale(d.x))
+            .y((d: IPoint) => yScale(d.y));
 
         this.axisG.selectAll('.x-axis').remove();
         this.axisG.selectAll('.y-axis').remove();
@@ -159,7 +119,6 @@ export class LineChart {
         path.exit().remove();
 
         const pathEnter = path.enter().append('path');
-
 
         pathEnter
             .merge(path)

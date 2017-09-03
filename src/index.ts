@@ -24,10 +24,20 @@ function updateLineChart() {
     let data: IPoint[] = [];
     for (var i = 0; i < rows; i++) {
         data.push({
-            x:  `${random(1)}-${random(1)}-${random(1)}`,
+            x:  new Date(2000 + random(1), random(1), random(1)),
             y: random()
         });
     }
+
+    function sortByDateAscending(a, b) {
+        // Dates will be cast to numbers automagically:
+        return a.date - b.date;
+    }
+
+    data = data.sort((a: IPoint, b:IPoint) => {
+        return a.x - b.x;
+    });
+
     console.log('data', data)
     lineChart.update(data);
 }
