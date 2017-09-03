@@ -53,7 +53,8 @@ export class LineChart {
     private svg: d3.Selection<any, any, any, any>;
     private g: d3.Selection<any, any, any, any>;
     private pathG: d3.Selection<any, any, any, any>;
-    private axisG: d3.Selection<any, any, any, any>;
+    private gAxisX: d3.Selection<any, any, any, any>;
+    private gAxisY: d3.Selection<any, any, any, any>;
     private _config: ILineChartConfig;
 
     constructor(private container: Element, config?: ILineChartConfig) {
@@ -66,7 +67,8 @@ export class LineChart {
             .append('svg')
             .classed('line-chart', true);
         this.g = this.svg.append('g');
-        this.axisG = this.g.append('g');
+        this.gAxisX = this.g.append('g').append('g').classed('x-axis', true);
+        this.gAxisY = this.g.append('g').append('g').classed('y-axis', true);
         this.pathG = this.g.append('g');
     }
 
@@ -96,19 +98,17 @@ export class LineChart {
             .x((d: IPoint) => xScale(d.x))
             .y((d: IPoint) => yScale(d.y));
 
-        this.axisG.selectAll('.x-axis').remove();
-        this.axisG.selectAll('.y-axis').remove();
-
-        const gAxisX = this.axisG.append('g').classed('x-axis', true);
-        const gAxisY = this.axisG.append('g').classed('y-axis', true);
-
-        gAxisX
+        this.gAxisX
             .attr('transform', 'translate(0,' + height + ')')
+            .transition()
+            .duration(500)
             .call(d3.axisBottom(xScale)
                 .ticks(5)
                 .tickSize(-height));
 
-        gAxisY
+        this.gAxisY
+            .transition()
+            .duration(500)
             .call(d3.axisLeft(yScale)
                 .ticks(5)
                 .tickSize(-width));
