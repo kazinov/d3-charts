@@ -1,22 +1,13 @@
-import * as d3 from 'd3';
 import './line-chart.css';
-
-export const ScaleTypes = {
-    time: 'time',
-    linear: 'linear'
-};
+import { IScaleConfig, ScaleTypes, getScale } from '../scale-utils';
+import { select } from 'd3-selection';
+import 'd3-transition';
+import { extent, axisBottom } from 'd3';
+import { line } from 'd3-shape';
+import { axisLeft } from 'd3-axis';
 
 export interface IAxisScaleRangeable<Domain> extends d3.AxisScale<Domain> {
     rangeRound(range: Array<number | { valueOf(): number }>): this;
-}
-
-export interface IParseFunction {
-    (input: any): any;
-}
-
-export interface IScaleConfig {
-    type: string,
-    format?: string
 }
 
 export interface ILineChartConfig {
@@ -63,7 +54,7 @@ export class LineChart {
     }
 
     private init() {
-        this.svg = d3.select(this.container)
+        this.svg = select(this.container)
             .append('svg')
             .classed('line-chart', true);
         this.g = this.svg.append('g');
@@ -86,15 +77,10 @@ export class LineChart {
 
             this.g.attr('transform', 'translate(' + this._config.margin.left + ',' + this._config.margin.top + ')');
 
-        let xScale: d3.ScaleTime<number, number> = d3.scaleTime()
-                .rangeRound([0, width])
-                .domain(d3.extent(data, (d) => d.x));
+        let xScale = getScale(this._config.xScale, [0, width], extent(data, (d) => d.x));
+        let yScale = getScale(this._config.yScale, [height, 0], extent(data, (d) => d.y));
 
-        let yScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
-            .rangeRound([height, 0])
-            .domain(d3.extent(data, (d) => d.y));
-
-        const line = d3.line<IPoint>()
+        const xyLine = line<IPoint>()
             .x((d: IPoint) => xScale(d.x))
             .y((d: IPoint) => yScale(d.y));
 
@@ -102,14 +88,14 @@ export class LineChart {
             .attr('transform', 'translate(0,' + height + ')')
             .transition()
             .duration(500)
-            .call(d3.axisBottom(xScale)
+            .call(axisBottom(xScale)
                 .ticks(5)
                 .tickSize(-height));
 
         this.gAxisY
             .transition()
             .duration(500)
-            .call(d3.axisLeft(yScale)
+            .call(axisLeft(yScale)
                 .ticks(5)
                 .tickSize(-width));
 
@@ -130,7 +116,7 @@ export class LineChart {
             .attr('stroke-width', 1)
             .transition()
             .duration(500)
-            .attr('d', line);
+            .attr('d', xyLine);
 
     }
 }
