@@ -1,14 +1,20 @@
 import { BarChart } from './bar-chart/bar-chart';
 import { IPoint, LineChart } from './line-chart/line-chart';
+import {getRandomDate, getRandomLineChartData, random} from "./data-utils";
+import {ScaleTypes} from "./scale-utils";
 
 const interval = 2000;
 const barChart = new BarChart(document.getElementById('bar-chart-container'));
 const lineChart = new LineChart(document.getElementById('line-chart-container'));
-
-const random = (order: number = 2) => {
-    const o = Math.pow(10,  order);
-    return Math.round(Math.random() * o);
-};
+const lineChart2 = new LineChart(document.getElementById('line-chart2-container'), {
+    yScale: {
+        type: ScaleTypes.time,
+        format: '%d-%m-%y'
+    },
+    xScale: {
+        type: ScaleTypes.linear
+    }
+});
 
 function updateBarChart() {
     const rows = random(1) || 1;
@@ -19,32 +25,8 @@ function updateBarChart() {
     barChart.update(data);
 }
 
-function updateLineChart() {
-    const rows = random();
-    let data: IPoint[] = [];
-    for (var i = 0; i < rows; i++) {
-        data.push({
-            x:  new Date(2000 + random(1), random(1), random(1)),
-            y: random()
-        });
-    }
-
-    function sortByDateAscending(a, b) {
-        // Dates will be cast to numbers automagically:
-        return a.date - b.date;
-    }
-
-    data = data.sort((a: IPoint, b:IPoint) => {
-        return a.x - b.x;
-    });
-
-    console.log('data', data)
-    lineChart.update(data);
-}
-
-// updateLineChart();
-
 setInterval(() => {
     updateBarChart();
-    updateLineChart();
+    lineChart.update(getRandomLineChartData(getRandomDate, random));
+    lineChart2.update(getRandomLineChartData(random, getRandomDate));
 }, interval);

@@ -64,7 +64,7 @@ export class LineChart {
     }
 
     config(config?: ILineChartConfig) {
-        this._config = Object.assign(LineChartConfigDefaults, config);
+        this._config = Object.assign({}, LineChartConfigDefaults, config);
     }
 
     update(data: IPoint[]) {
