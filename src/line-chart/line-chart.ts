@@ -6,6 +6,11 @@ import { extent, axisBottom } from 'd3';
 import { line } from 'd3-shape';
 import { axisLeft } from 'd3-axis';
 
+export interface ISeries {
+	data: IPoint[],
+	color?: string,
+}
+
 export interface IAxisScaleRangeable<Domain> extends d3.AxisScale<Domain> {
     rangeRound(range: Array<number | { valueOf(): number }>): this;
 }
@@ -67,7 +72,8 @@ export class LineChart {
         this._config = Object.assign({}, LineChartConfigDefaults, config);
     }
 
-    update(data: IPoint[]) {
+    update(series: ISeries) {
+    	const data = series.data;
         const width = this._config.width - this._config.margin.left - this._config.margin.right;
         const height = this._config.height - this._config.margin.top - this._config.margin.bottom;
 
@@ -110,7 +116,7 @@ export class LineChart {
             .merge(path)
             .attr('transform', 'translate(0.5, 0.5)')
             .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
+            .attr('stroke', series.color || 'steelblue')
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .attr('stroke-width', 1)
