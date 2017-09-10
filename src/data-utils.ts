@@ -9,7 +9,7 @@ export function getRandomDate() {
 	return new Date(2000 + random(1), random(1), random(1));
 }
 
-export function getRandomLineChartData(getX: () => any, getY: () => any): ISeries {
+export function getLineChartData(getX: () => any, getY: () => any): ISeries {
 	const rows = random();
 	let data: IPoint[] = [];
 	for (var i = 0; i < rows; i++) {
@@ -25,4 +25,12 @@ export function getRandomLineChartData(getX: () => any, getY: () => any): ISerie
 	return {
 		data: data
 	};
+}
+
+export function getLineChartSeries(getX: () => any, getY: () => any): ISeries[] {
+	const series = [];
+	for(var i = 0; i < 2; i++) {
+		series.push(getLineChartData(getX, getY));
+	}
+	return series;
 }

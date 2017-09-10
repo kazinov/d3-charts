@@ -1,6 +1,6 @@
 import { BarChart } from './bar-chart/bar-chart';
 import { IPoint, LineChart } from './line-chart/line-chart';
-import {getRandomDate, getRandomLineChartData, random} from "./data-utils";
+import {getRandomDate, getLineChartData, random, getLineChartSeries} from "./data-utils";
 import {ScaleTypes} from "./scale-utils";
 
 const interval = 2000;
@@ -27,6 +27,6 @@ function updateBarChart() {
 
 setInterval(() => {
     updateBarChart();
-    lineChart.update(getRandomLineChartData(getRandomDate, random));
-    lineChart2.update(getRandomLineChartData(random, getRandomDate));
+    lineChart.update(getLineChartSeries(getRandomDate, random));
+    lineChart2.update(getLineChartSeries(random, getRandomDate));
 }, interval);

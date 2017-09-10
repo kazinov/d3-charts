@@ -3,8 +3,10 @@ import { IScaleConfig, ScaleTypes, getScale } from '../scale-utils';
 import { select } from 'd3-selection';
 import 'd3-transition';
 import { extent, axisBottom } from 'd3';
-import { line } from 'd3-shape';
+import {curveBasis, line} from 'd3-shape';
 import { axisLeft } from 'd3-axis';
+import {max, min} from "d3-array";
+import {scaleOrdinal, schemeCategory10} from "d3-scale";
 
 export interface ISeries {
 	data: IPoint[],
@@ -21,6 +23,17 @@ export interface ILineChartConfig {
     margin?: { top: number, right: number, bottom: number, left: number },
     xScale?: IScaleConfig;
     yScale?: IScaleConfig;
+}
+
+function getDomain(series: ISeries[], getter: (point: IPoint) => any) {
+	return [
+		min(series, (s) => {
+			return min(s.data, getter);
+		}),
+		max(series, (s) => {
+			return max(s.data, getter);
+		})
+	];
 }
 
 const LineChartConfigDefaults: ILineChartConfig = {
@@ -72,8 +85,7 @@ export class LineChart {
         this._config = Object.assign({}, LineChartConfigDefaults, config);
     }
 
-    update(series: ISeries) {
-    	const data = series.data;
+    update(series: ISeries[]) {
         const width = this._config.width - this._config.margin.left - this._config.margin.right;
         const height = this._config.height - this._config.margin.top - this._config.margin.bottom;
 
@@ -83,10 +95,14 @@ export class LineChart {
 
             this.g.attr('transform', 'translate(' + this._config.margin.left + ',' + this._config.margin.top + ')');
 
-        let xScale = getScale(this._config.xScale, [0, width], extent(data, (d) => d.x));
-        let yScale = getScale(this._config.yScale, [height, 0], extent(data, (d) => d.y));
+		let xScale = getScale(this._config.xScale, [0, width], getDomain(series, (d) => d.x));
+        let yScale = getScale(this._config.yScale, [height, 0], getDomain(series, (d) => d.y));
+		let colorScale = scaleOrdinal(schemeCategory10)
+			.domain(series.map(function(c, index) { return index.toString(); }));
 
-        const xyLine = line<IPoint>()
+
+		const xyLine = line<IPoint>()
+			.curve(curveBasis)
             .x((d: IPoint) => xScale(d.x))
             .y((d: IPoint) => yScale(d.y));
 
@@ -106,7 +122,7 @@ export class LineChart {
                 .tickSize(-width));
 
         const path = this.pathG.selectAll('path')
-            .data([data]);
+            .data(series);
 
         path.exit().remove();
 
@@ -116,13 +132,13 @@ export class LineChart {
             .merge(path)
             .attr('transform', 'translate(0.5, 0.5)')
             .attr('fill', 'none')
-            .attr('stroke', series.color || 'steelblue')
+			.style("stroke", function(d: ISeries, i) { return d.color || colorScale(i.toString()); })
             .attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .attr('stroke-width', 1)
             .transition()
             .duration(500)
-            .attr('d', xyLine);
+            .attr('d', (d: ISeries) => xyLine(d.data));
 
     }
 }
