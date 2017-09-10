@@ -9,8 +9,7 @@ import {max, min} from "d3-array";
 import {scaleOrdinal, schemeCategory10} from "d3-scale";
 
 export interface ISeries {
-	data: IPoint[],
-	color?: string,
+	data: IPoint[]
 }
 
 export interface IAxisScaleRangeable<Domain> extends d3.AxisScale<Domain> {
@@ -23,6 +22,7 @@ export interface ILineChartConfig {
     margin?: { top: number, right: number, bottom: number, left: number },
     xScale?: IScaleConfig;
     yScale?: IScaleConfig;
+	transitionDuration?: number
 }
 
 function getDomain(series: ISeries[], getter: (point: IPoint) => any) {
@@ -40,6 +40,7 @@ const LineChartConfigDefaults: ILineChartConfig = {
     width: 400,
     height: 300,
     margin: {top: 20, right: 20, bottom: 30, left: 50},
+	transitionDuration: 500,
     xScale: {
         type: ScaleTypes.time,
         format: '%d-%m-%y'
@@ -109,14 +110,14 @@ export class LineChart {
         this.gAxisX
             .attr('transform', 'translate(0,' + height + ')')
             .transition()
-            .duration(500)
+            .duration(this._config.transitionDuration)
             .call(axisBottom(xScale)
                 .ticks(5)
                 .tickSize(-height));
 
         this.gAxisY
             .transition()
-            .duration(500)
+            .duration(this._config.transitionDuration)
             .call(axisLeft(yScale)
                 .ticks(5)
                 .tickSize(-width));
@@ -138,7 +139,7 @@ export class LineChart {
 			.attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
             .transition()
-            .duration(500)
+            .duration(this._config.transitionDuration)
             .attr('d', (d: ISeries) => xyLine(d.data));
 
     }
