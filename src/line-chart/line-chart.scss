@@ -1,0 +1,30 @@
+@import "../variables";
+
+.line-chart {
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: black;
+  }
+
+  .tick text {
+    font-size: 12px;
+  }
+
+  .tick line {
+    opacity: 0.2;
+  }
+
+  .line {
+    fill: none;
+    stroke: blue;
+    stroke-width: 1px;
+  }
+
+  @for $i from 1 through (length($seriesColors) - 1) {
+    .series-#{$i} {
+      stroke: #{nth($seriesColors, $i)}
+    }
+  }
+
+}

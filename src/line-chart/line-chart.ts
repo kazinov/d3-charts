@@ -1,4 +1,4 @@
-import './line-chart.css';
+import './line-chart.scss';
 import { IScaleConfig, ScaleTypes, getScale } from '../scale-utils';
 import { select } from 'd3-selection';
 import 'd3-transition';
@@ -126,16 +126,17 @@ export class LineChart {
 
         path.exit().remove();
 
-        const pathEnter = path.enter().append('path');
+        const pathEnter = path.enter().append('path')
+			.classed('line', true)
+			.each((datum, index: number, elements: Element[]) => {
+				select(elements[index]).classed(`series-${index + 1}`, true);
+			});
 
         pathEnter
             .merge(path)
             .attr('transform', 'translate(0.5, 0.5)')
-            .attr('fill', 'none')
-			.style("stroke", function(d: ISeries, i) { return d.color || colorScale(i.toString()); })
-            .attr('stroke-linejoin', 'round')
+			.attr('stroke-linejoin', 'round')
             .attr('stroke-linecap', 'round')
-            .attr('stroke-width', 1)
             .transition()
             .duration(500)
             .attr('d', (d: ISeries) => xyLine(d.data));
